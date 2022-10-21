@@ -38,3 +38,8 @@ func NewOrders(ctx context.Context, c *config.Config) (*Orders, error) {
 		config: c,
 	}, nil
 }
+
+// GetConfig .
+func (o *Orders) GetConfig() *config.Config {
+	return o.config
+}

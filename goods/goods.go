@@ -44,6 +44,11 @@ func NewGoods(ctx context.Context, c *config.Config) (*Goods, error) {
 	}, nil
 }
 
+// GetConfig .
+func (s *Goods) GetConfig() *config.Config {
+	return s.config
+}
+
 // QueryCate query category
 func (s *Goods) QueryCate(ctx context.Context, req *entity.OpenCategoryGoodsGetRequest) (res *entity.OpenCategoryGoodsGetResponse, err error) {
 	ctx, span := gtrace.NewSpan(ctx, "tracing-union-jd-goods-QueryCate")
@@ -61,10 +66,11 @@ func (s *Goods) QueryCate(ctx context.Context, req *entity.OpenCategoryGoodsGetR
 		str  string
 	)
 
-	if str, err = gjson.New(req).ToIniString(); err != nil {
+	if str, err = gjson.New(req).ToJsonString(); err != nil {
 		err = gerror.Wrap(err, "json to string err")
 		return
 	}
+	s.config.Logger().Info(ctx, "query category params:", str)
 	var reqe *entity.Request
 	if reqe, err = util.NewRequest(ctx, s.config, config.UnionOpenCategoryGoodsGet, str); err != nil {
 		err = gerror.Wrap(err, "new request err")

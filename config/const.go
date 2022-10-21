@@ -19,8 +19,8 @@ const (
 	// ServerURL this is JD open server url;
 	serverURL = "https://api.jd.com/routerjson"
 
-	// UserAgent name of jd user agent
-	UserAgent = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/106.0.0.0 Safari/537.36"
+	// userAgent name of jd user agent
+	userAgent = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/106.0.0.0 Safari/537.36"
 
 	// Timeout request timeout
 	Timeout = 5 * time.Second

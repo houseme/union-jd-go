@@ -85,7 +85,7 @@ func NewConfig(ctx context.Context, appKey, appSecret string, opts ...Option) (*
 	op := options{
 		Timeout:     Timeout,
 		Logger:      g.Log(defaultLogger),
-		UserAgent:   UserAgent,
+		UserAgent:   userAgent,
 		AccessToken: "",
 	}
 
