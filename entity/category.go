@@ -10,32 +10,31 @@ package entity
 
 // OpenCategoryGoodsGetResponse .
 type OpenCategoryGoodsGetResponse struct {
-	JDUnionOpenCategoryGoodsGetResponse *JDUnionOpenCategoryGoodsGetResponse `json:"jd_union_open_category_goods_get_response"`
+	JDUnionOpenCategoryGoodsGetResponse *JDUnionOpenCategoryGoodsGetResponse `json:"jd_union_open_category_goods_get_responce"`
 }
 
 // JDUnionOpenCategoryGoodsGetResponse jd union
 type JDUnionOpenCategoryGoodsGetResponse struct {
-	GetResult *GetResult `json:"getResult"`
+	Code          uint   `json:"code,string"`
+	ErrorMessage  string `json:"errorMessage"`
+	ErrorSolution string `json:"errorSolution"`
+	GetResult     string `json:"getResult"`
 }
 
-// GetResult get result
-type GetResult struct {
-	Code    string         `json:"code"`
-	Data    *GetResultData `json:"data"`
-	Message string         `json:"message"`
-}
-
-// GetResultData get result data
-type GetResultData struct {
-	CategoryResp []*CategoryResp `json:"categoryResp"`
-}
-
-// CategoryResp category item response
+// CategoryResp get result
 type CategoryResp struct {
+	Data      []*CategoryItem `json:"data"`
+	Message   string          `json:"message"`
+	RequestID string          `json:"requestId"`
+	Code      uint            `json:"code"`
+}
+
+// CategoryItem category item response
+type CategoryItem struct {
 	Name     string `json:"name"`
-	Grade    uint   `json:"grade,string"`
-	ID       uint   `json:"id,string"`
-	ParentID uint   `json:"parentId,string"`
+	Grade    uint   `json:"grade"`
+	ID       uint   `json:"id"`
+	ParentID uint   `json:"parentId"`
 }
 
 // OpenCategoryGoodsGetRequest .

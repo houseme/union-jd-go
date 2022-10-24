@@ -9,7 +9,7 @@
 package entity
 
 import (
-	"encoding/json"
+	"github.com/houseme/union-jd-go/config"
 )
 
 // UnionOpenGoodsJingFenQueryResponse  response
@@ -157,44 +157,16 @@ type DocumentInfo struct {
 	Discount string `json:"discount"` // 优惠力度文案
 }
 
-// EliteID 分类ID类型
-type EliteID int32
-
-const (
-	GoodCoupon           EliteID = 1   // 1-好券商品
-	SuperHypermarket             = 2   // 2-超级大卖场
-	NineDivision                 = 10  // 10-9.9专区
-	HotSell                      = 22  // 22-热销爆品
-	Commend                      = 23  // 23-为你推荐
-	DigitalHomeAppliance         = 24  // 24-数码家电
-	SuperMarket                  = 25  // 25-超市
-	MotherAndBabyToys            = 26  // 26-母婴玩具
-	FurnitureDaily               = 27  // 27-家具日用
-	BeautyMakeup                 = 28  // 28-美妆穿搭,
-	HealthCare                   = 29  // 29-医药保健
-	BooksStationary              = 30  // 30-图书文具
-	TodayRecommend               = 31  // 31-今日必推
-	BrandHQGoods                 = 32  // 32-品牌好货
-	SeckillGoods                 = 33  // 33-秒杀商品
-	PinGouGoods                  = 34  // 34-拼购商品
-	HighIncome                   = 40  // 40-高收益
-	SelfSupportHotSell           = 41  // 41-自营热卖榜
-	NewArrival                   = 109 // 109-新品首发
-	SelfSupport                  = 110 // 110-自营
-	FirstPurchase                = 125 // 125-首购商品
-	HighCommission               = 129 // 129-高佣榜单
-	VideoGoods                   = 130 // 130-视频商品
-)
-
 // JFGoodsReq 商品查询请求
 type JFGoodsReq struct {
-	EliteID   EliteID `json:"eliteId,omitempty"`   // 频道ID
-	PageIndex *int32  `json:"pageIndex,omitempty"` // 页码 默认1
-	PageSize  *int32  `json:"PageSize,omitempty"`  // 每页数量，默认20，上限50
-	SortName  *string `json:"sortName,omitempty"`  // 排序字段
-	Sort      *string `json:"sort,omitempty"`      // asc,desc升降序,默认降序
-	Pid       *string `json:"pid,omitempty"`       // 联盟id_应用id_推广位id，三段式
-	Fields    *string `json:"fields,omitempty"`    // 支持出参数据筛选，逗号','分隔，目前可用：videoInfo,documentInfo
+	SortName  string         `json:"sortName,omitempty"`  // 排序字段
+	Sort      string         `json:"sort,omitempty"`      // asc,desc升降序,默认降序
+	Pid       string         `json:"pid,omitempty"`       // 联盟id_应用id_推广位id，三段式
+	Fields    string         `json:"fields,omitempty"`    // 支持出参数据筛选，逗号','分隔，目前可用：videoInfo,documentInfo
+	EliteID   config.EliteID `json:"eliteId,omitempty"`   // 频道ID
+	PageIndex uint           `json:"pageIndex,omitempty"` // 页码 默认1
+	PageSize  uint           `json:"PageSize,omitempty"`  // 每页数量，默认20，上限50
+
 }
 
 // UnionOpenGoodsJingFenQueryRequest 京粉精选商品查询接口
@@ -202,46 +174,9 @@ type UnionOpenGoodsJingFenQueryRequest struct {
 	GoodsReq *JFGoodsReq `json:"goods_req"`
 }
 
-// NewJFGoodsReq 创建商品查询请求
-func NewJFGoodsReq(eliteID EliteID, pageIndex *int32, pageSize *int32, sortName *string, sort *string, pid *string, fields *string) *JFGoodsReq {
-	return &JFGoodsReq{
-		EliteID:   eliteID,
-		PageIndex: pageIndex,
-		PageSize:  pageSize,
-		SortName:  sortName,
-		Sort:      sort,
-		Pid:       pid,
-		Fields:    fields,
-	}
-}
-
-// NewUnionOpenGoodsJingFenQueryRequest 创建京粉精选商品查询接口请求
-func NewUnionOpenGoodsJingFenQueryRequest(goodsReq *JFGoodsReq) *UnionOpenGoodsJingFenQueryRequest {
-	return &UnionOpenGoodsJingFenQueryRequest{
-		GoodsReq: goodsReq,
-	}
-}
-
-// JSONParams 转换为json参数
-func (req *UnionOpenGoodsJingFenQueryRequest) JSONParams() (string, error) {
-	goodsReq := map[string]interface{}{
-		"goodsReq": &req.GoodsReq,
-	}
-	paramJsonBytes, err := json.Marshal(&goodsReq)
-	if err != nil {
-		return "", err
-	}
-	return string(paramJsonBytes), nil
-}
-
-// ResponseName 返回接口名称
-func (req *UnionOpenGoodsJingFenQueryRequest) ResponseName() string {
-	return "jd_union_open_goods_jingfen_query_response"
-}
-
 // JDUnionOpenGoodsBigFieldQueryTopLevel 京粉精选商品查询接口
 type JDUnionOpenGoodsBigFieldQueryTopLevel struct {
-	JDUnionOpenGoodsBigFieldQueryResponse JDUnionOpenGoodsBigFieldQueryResponse `json:"jd_union_open_goods_bigfield_query_responce"`
+	JDUnionOpenGoodsBigFieldQueryResponse JDUnionOpenGoodsBigFieldQueryResponse `json:"jd_union_open_goods_bigfield_query_response"`
 }
 
 // JDUnionOpenGoodsBigFieldQueryResponse 京粉精选商品查询接口响应

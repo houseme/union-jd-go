@@ -12,15 +12,11 @@ package goods
 import (
 	"context"
 
-	"github.com/gogf/gf/v2/encoding/gjson"
 	"github.com/gogf/gf/v2/errors/gerror"
-	"github.com/gogf/gf/v2/frame/g"
-	"github.com/gogf/gf/v2/net/gclient"
 	"github.com/gogf/gf/v2/net/gtrace"
 
 	"github.com/houseme/union-jd-go/config"
 	"github.com/houseme/union-jd-go/entity"
-	"github.com/houseme/union-jd-go/pkg"
 )
 
 // Goods .
@@ -49,49 +45,37 @@ func (s *Goods) GetConfig() *config.Config {
 	return s.config
 }
 
-// QueryCate query category
-func (s *Goods) QueryCate(ctx context.Context, req *entity.OpenCategoryGoodsGetRequest) (res *entity.OpenCategoryGoodsGetResponse, err error) {
-	ctx, span := gtrace.NewSpan(ctx, "tracing-union-jd-goods-QueryCate")
+// QueryGoods jingfen goods query
+// 京粉商品查询
+func (s *Goods) QueryGoods(req *entity.UnionOpenGoodsJingFenQueryRequest) (resp *entity.JDUnionOpenGoodsBigFieldQueryTopLevel, err error) {
+	ctx, span := gtrace.NewSpan(s.ctx, "tracing-union-jd-goods-QueryGoods")
 	defer span.End()
 
-	s.config.Logger().Info(ctx, "query category start params:", req)
-
+	s.config.Logger().Info(ctx, "Query Goods list start params:", req)
 	if req == nil {
-		err = gerror.New("query category request required")
+		err = gerror.New("query Goods list request required")
 		return
 	}
 
-	var (
-		util = pkg.NewUtil(s.config.Logger())
-		str  string
-	)
-
-	if str, err = gjson.New(req).ToJsonString(); err != nil {
-		err = gerror.Wrap(err, "json to string err")
-		return
-	}
-	s.config.Logger().Info(ctx, "query category params:", str)
-	var reqe *entity.Request
-	if reqe, err = util.NewRequest(ctx, s.config, config.UnionOpenCategoryGoodsGet, str); err != nil {
-		err = gerror.Wrap(err, "new request err")
-		return
-	}
-	var response *gclient.Response
-	if response, err = g.Client().SetAgent(s.config.UserAgent()).Timeout(s.config.Timeout()).Get(ctx, s.config.ServerURL(), reqe); err != nil {
-		err = gerror.Wrap(err, "request err")
-		return
-	}
-	defer func() {
-		if err := response.Close(); err != nil {
-			s.config.Logger().Error(ctx, "response close err: ", err)
-		}
-	}()
-
-	content := response.ReadAllString()
-	s.config.Logger().Info(ctx, "request result content: ", content)
-	if err = gjson.New(content).Scan(&res); err != nil {
-		err = gerror.Wrap(err, "response read err")
-		return
-	}
 	return
+}
+
+// NewJFGoodsReq 创建商品查询请求
+func (s *Goods) NewJFGoodsReq(eliteID config.EliteID, pageIndex, pageSize uint, sortName, sort, pid, fields string) *entity.JFGoodsReq {
+	return &entity.JFGoodsReq{
+		EliteID:   eliteID,
+		PageIndex: pageIndex,
+		PageSize:  pageSize,
+		SortName:  sortName,
+		Sort:      sort,
+		Pid:       pid,
+		Fields:    fields,
+	}
+}
+
+// NewUnionOpenGoodsJingFenQueryRequest 创建京粉精选商品查询接口请求
+func (s *Goods) NewUnionOpenGoodsJingFenQueryRequest(goodsReq *entity.JFGoodsReq) *entity.UnionOpenGoodsJingFenQueryRequest {
+	return &entity.UnionOpenGoodsJingFenQueryRequest{
+		GoodsReq: goodsReq,
+	}
 }
