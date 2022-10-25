@@ -17,6 +17,8 @@ import (
 
 	"github.com/houseme/union-jd-go/config"
 	"github.com/houseme/union-jd-go/entity"
+	"github.com/houseme/union-jd-go/pkg"
+	"github.com/houseme/union-jd-go/pkg/handler"
 )
 
 // Goods .
@@ -47,7 +49,7 @@ func (s *Goods) GetConfig() *config.Config {
 
 // QueryGoods jingfen goods query
 // 京粉商品查询
-func (s *Goods) QueryGoods(req *entity.UnionOpenGoodsJingFenQueryRequest) (resp *entity.JDUnionOpenGoodsBigFieldQueryTopLevel, err error) {
+func (s *Goods) QueryGoods(req *entity.UnionOpenGoodsJingFenQueryRequest) (res *entity.UnionOpenGoodsJingFenQueryResponseTopLevel, err error) {
 	ctx, span := gtrace.NewSpan(s.ctx, "tracing-union-jd-goods-QueryGoods")
 	defer span.End()
 
@@ -56,7 +58,28 @@ func (s *Goods) QueryGoods(req *entity.UnionOpenGoodsJingFenQueryRequest) (resp 
 		err = gerror.New("query Goods list request required")
 		return
 	}
+	var (
+		util    = pkg.NewUtil(s.config.Logger())
+		request = handler.NewUnionRequest(ctx, s.config, handler.WithMethod(config.UnionOpenGoodsJingFenQuery), handler.WithUnionOpenGoodsJingFenQueryRequest(req))
+		resp    *handler.UnionResponse
+	)
 
+	if resp, err = util.Handler(ctx, request); err != nil {
+		err = gerror.New("query category request failed")
+		return
+	}
+	if resp == nil {
+		err = gerror.New("query goods list response is nil")
+		return
+	}
+
+	if resp.UnionOpenGoodsJingFenQueryResponseTopLevel == nil {
+		err = gerror.New("query goods list response is nil")
+		return
+	}
+	s.config.Logger().Debug(ctx, "query goods list response:", resp)
+	res = resp.UnionOpenGoodsJingFenQueryResponseTopLevel
+	s.config.Logger().Debug(ctx, "query goods list response:", res)
 	return
 }
 

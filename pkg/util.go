@@ -44,10 +44,10 @@ func NewUtil(log glog.ILogger) *util {
 
 // NewRequest new request
 func (l *util) NewRequest(ctx context.Context, c *config.Config, method, params string) (req *entity.Request, err error) {
-	ctx, span := gtrace.NewSpan(ctx, "tracing-union-jd-logic-NewRequest")
+	ctx, span := gtrace.NewSpan(ctx, "tracing-union-jd-util-NewRequest")
 	defer span.End()
 
-	l.logger.Info(ctx, "new request start params:", params)
+	l.logger.Debug(ctx, "new request start params:", params)
 	req = &entity.Request{
 		Method:       method,
 		Version:      config.RequestVersion,
@@ -60,13 +60,13 @@ func (l *util) NewRequest(ctx context.Context, c *config.Config, method, params 
 	if req.Sign, err = l.MakeSign(ctx, c.AppSecret(), *req); err != nil {
 		return nil, gerror.Wrap(err, "make sign failed")
 	}
-	l.logger.Info(ctx, "new request end result:", req)
+	l.logger.Debug(ctx, "new request end result:", req)
 	return req, nil
 }
 
 // MakeSign make sign
 func (l *util) MakeSign(ctx context.Context, appSecret string, req entity.Request) (string, error) {
-	ctx, span := gtrace.NewSpan(ctx, "tracing-union-jd-logic-MakeSign")
+	ctx, span := gtrace.NewSpan(ctx, "tracing-union-jd-util-MakeSign")
 	defer span.End()
 
 	hash := md5.New()
@@ -90,7 +90,7 @@ func (l *util) ConcatenateSignSource(ctx context.Context, data interface{}) stri
 		params = make(map[string]string)
 	)
 
-	l.logger.Info(ctx, "helper ConcatenateSignSource tt", tt, " v", v)
+	l.logger.Debug(ctx, "helper ConcatenateSignSource tt", tt, " v", v)
 
 	for i := 0; i < count; i++ {
 		if v.Field(i).CanInterface() { // 判断是否为可导出字段
@@ -112,22 +112,22 @@ func (l *util) ConcatenateSignSource(ctx context.Context, data interface{}) stri
 			return ""
 		}
 	}
-	l.logger.Info(ctx, "helper ConcatenateSignSource string start:", buf.String())
+	l.logger.Debug(ctx, "helper ConcatenateSignSource string start:", buf.String())
 	return buf.String()
 }
 
 // Handler request handler
-func (l *util) Handler(ctx context.Context, req *handler.UnionRequest) (res *handler.UnionResponse, err error) {
-	ctx, span := gtrace.NewSpan(ctx, "tracing-union-jd-logic-Handler")
+func (l *util) Handler(ctx context.Context, req *handler.UnionRequest) (resp *handler.UnionResponse, err error) {
+	ctx, span := gtrace.NewSpan(ctx, "tracing-union-jd-util-Handler")
 	defer span.End()
 
-	l.logger.Info(ctx, "handler start params:", req)
+	l.logger.Debug(ctx, "handler start params:", req)
 	var str string
 	if str, err = l.ParamsToString(ctx, req); err != nil {
 		err = gerror.Wrap(err, "json to string err")
 		return
 	}
-	l.logger.Info(ctx, "query category params:", str)
+	l.logger.Debug(ctx, "query category params:", str)
 	var reqe *entity.Request
 	if reqe, err = l.NewRequest(ctx, req.GetConfig(), req.GetMethod(), str); err != nil {
 		err = gerror.Wrap(err, "new request err")
@@ -145,36 +145,91 @@ func (l *util) Handler(ctx context.Context, req *handler.UnionRequest) (res *han
 		}
 	}()
 
-	var (
-		content = response.ReadAllString()
-		params  interface{}
-	)
-	l.logger.Info(ctx, "request result content: ", content)
-	switch req.GetMethod() {
-	case config.UnionOpenCategoryGoodsGet:
-		params = req.GetOpenCategoryGoodsGetRequest()
-	case config.UnionOpenGoodsJingFenQuery:
-		params = req.GetUnionOpenGoodsJingFenQueryRequest()
-	default:
-		params = nil
+	var content = response.ReadAllString()
+	l.logger.Debug(ctx, "request result content: ", content)
+	if resp, err = l.ResponseToStruct(ctx, content, req.GetMethod()); err != nil {
+		err = gerror.Wrap(err, "response to struct err")
+		return
 	}
-	if err = gjson.New(content).Scan(&res); err != nil {
+
+	l.logger.Debug(ctx, "handler end result:", resp)
+	return
+}
+
+// ResponseToStruct response to struct
+func (l *util) ResponseToStruct(ctx context.Context, response, method string) (resp *handler.UnionResponse, err error) {
+	ctx, span := gtrace.NewSpan(ctx, "tracing-union-jd-util-ResponseToStruct")
+	defer span.End()
+
+	l.logger.Debug(ctx, "response to struct start params:", response, " method:", method)
+	switch method {
+	case config.UnionOpenCategoryGoodsGet:
+		resp, err = l.openCategoryGoodsGetResponse(ctx, response)
+	case config.UnionOpenGoodsJingFenQuery:
+		resp, err = l.unionOpenGoodsJingFenQueryResponse(ctx, response)
+	default:
+		resp = nil
+		err = gerror.New("method not found")
+	}
+	l.logger.Debug(ctx, "response to struct end result:", resp)
+	return
+}
+
+// openCategoryGoodsGetResponse open category goods get response
+func (l *util) openCategoryGoodsGetResponse(ctx context.Context, response string) (resp *handler.UnionResponse, err error) {
+	ctx, span := gtrace.NewSpan(ctx, "tracing-union-jd-util-openCategoryGoodsGetResponse")
+	defer span.End()
+
+	l.logger.Debug(ctx, "open category goods get response start params:", response)
+	var result *entity.OpenCategoryGoodsGetResponse
+	if err = gjson.New(response).Scan(&result); err != nil {
 		err = gerror.Wrap(err, "response read err")
 		return
 	}
 
-	l.logger.Info(ctx, "handler end result:", res)
-	return res, nil
+	if result == nil {
+		err = gerror.New("response is nil")
+		return
+	}
+
+	resp = &handler.UnionResponse{
+		OpenCategoryGoodsGetResponse: result,
+	}
+	l.logger.Debug(ctx, "open category goods get response end result:", resp)
+	return
+}
+
+// unionOpenGoodsJingFenQueryResponse union open goods jing fen query response
+func (l *util) unionOpenGoodsJingFenQueryResponse(ctx context.Context, response string) (resp *handler.UnionResponse, err error) {
+	ctx, span := gtrace.NewSpan(ctx, "tracing-union-jd-util-unionOpenGoodsJingFenQueryResponse")
+	defer span.End()
+
+	l.logger.Debug(ctx, "union open goods jing fen query response start params:", response)
+	var result *entity.UnionOpenGoodsJingFenQueryResponseTopLevel
+	if err = gjson.New(response).Scan(&result); err != nil {
+		err = gerror.Wrap(err, "response read err")
+		return
+	}
+
+	if result == nil {
+		err = gerror.New("response is nil")
+		return
+	}
+
+	resp = &handler.UnionResponse{
+		UnionOpenGoodsJingFenQueryResponseTopLevel: result,
+	}
+	l.logger.Debug(ctx, "union open goods jing fen query response end result:", resp)
+	return
 }
 
 // ParamsToString params to string
 func (l *util) ParamsToString(ctx context.Context, req *handler.UnionRequest) (str string, err error) {
-	ctx, span := gtrace.NewSpan(ctx, "tracing-union-jd-logic-ParamsStr")
+	ctx, span := gtrace.NewSpan(ctx, "tracing-union-jd-util-ParamsStr")
 	defer span.End()
 
-	l.logger.Info(ctx, "params str start params:", req)
+	l.logger.Debug(ctx, "params str start params:", req)
 	var params interface{}
-
 	switch req.GetMethod() {
 	case config.UnionOpenCategoryGoodsGet:
 		params = req.GetOpenCategoryGoodsGetRequest()
@@ -192,6 +247,6 @@ func (l *util) ParamsToString(ctx context.Context, req *handler.UnionRequest) (s
 		err = gerror.Wrap(err, "json to string err")
 		return
 	}
-	l.logger.Info(ctx, "params str end result:", str)
+	l.logger.Debug(ctx, "params str end result:", str)
 	return str, nil
 }

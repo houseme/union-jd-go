@@ -11,15 +11,13 @@ package goods
 import (
 	"context"
 
-	"github.com/gogf/gf/v2/encoding/gjson"
 	"github.com/gogf/gf/v2/errors/gerror"
-	"github.com/gogf/gf/v2/frame/g"
-	"github.com/gogf/gf/v2/net/gclient"
 	"github.com/gogf/gf/v2/net/gtrace"
 
 	"github.com/houseme/union-jd-go/config"
 	"github.com/houseme/union-jd-go/entity"
 	"github.com/houseme/union-jd-go/pkg"
+	"github.com/houseme/union-jd-go/pkg/handler"
 )
 
 // QueryCate query category
@@ -35,36 +33,26 @@ func (s *Goods) QueryCate(ctx context.Context, req *entity.OpenCategoryGoodsGetR
 	}
 
 	var (
-		util = pkg.NewUtil(s.config.Logger())
-		str  string
+		util    = pkg.NewUtil(s.config.Logger())
+		request = handler.NewUnionRequest(ctx, s.config, handler.WithMethod(config.UnionOpenCategoryGoodsGet), handler.WithOpenCategoryGoodsGetRequest(req))
+		resp    *handler.UnionResponse
 	)
 
-	if str, err = gjson.New(req).ToJsonString(); err != nil {
-		err = gerror.Wrap(err, "json to string err")
+	if resp, err = util.Handler(ctx, request); err != nil {
+		err = gerror.New("query category request failed")
 		return
 	}
-	s.config.Logger().Info(ctx, "query category params:", str)
-	var reqe *entity.Request
-	if reqe, err = util.NewRequest(ctx, s.config, config.UnionOpenCategoryGoodsGet, str); err != nil {
-		err = gerror.Wrap(err, "new request err")
+	if resp == nil {
+		err = gerror.New("query category response is nil")
 		return
 	}
-	var response *gclient.Response
-	if response, err = g.Client().SetAgent(s.config.UserAgent()).Timeout(s.config.Timeout()).Get(ctx, s.config.ServerURL(), reqe); err != nil {
-		err = gerror.Wrap(err, "request err")
-		return
-	}
-	defer func() {
-		if err := response.Close(); err != nil {
-			s.config.Logger().Error(ctx, "response close err: ", err)
-		}
-	}()
 
-	content := response.ReadAllString()
-	s.config.Logger().Info(ctx, "request result content: ", content)
-	if err = gjson.New(content).Scan(&res); err != nil {
-		err = gerror.Wrap(err, "response read err")
+	if resp.OpenCategoryGoodsGetResponse == nil {
+		err = gerror.New("query category response is nil")
 		return
 	}
+	s.config.Logger().Debug(ctx, "query category response:", resp)
+	res = resp.OpenCategoryGoodsGetResponse
+	s.config.Logger().Debug(ctx, "query category response:", res)
 	return
 }

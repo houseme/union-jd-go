@@ -12,8 +12,23 @@ import (
 	"github.com/houseme/union-jd-go/config"
 )
 
-// UnionOpenGoodsJingFenQueryResponse  response
+// UnionOpenGoodsJingFenQueryResponseTopLevel is a response struct.
+// 京东联盟精选优质商品查询接口 顶层结构体
+type UnionOpenGoodsJingFenQueryResponseTopLevel struct {
+	UnionOpenGoodsJingFenQueryResponse *UnionOpenGoodsJingFenQueryResponse `json:"jd_union_open_goods_jingfen_query_responce"`
+}
+
+// UnionOpenGoodsJingFenQueryResponse is a response struct.
+// 京东联盟精选优质商品查询接口 结构体
 type UnionOpenGoodsJingFenQueryResponse struct {
+	Code          uint   `json:"code,string"`
+	ErrorMessage  string `json:"errorMessage"`
+	ErrorSolution string `json:"errorSolution"`
+	QueryResult   string `json:"queryResult"`
+}
+
+// UnionOpenGoodsJingFenQueryResponseResult  response
+type UnionOpenGoodsJingFenQueryResponseResult struct {
 	Code       int32          `json:"code"`
 	Message    string         `json:"message"`
 	RequestID  string         `json:"requestId"`
@@ -171,7 +186,7 @@ type JFGoodsReq struct {
 
 // UnionOpenGoodsJingFenQueryRequest 京粉精选商品查询接口
 type UnionOpenGoodsJingFenQueryRequest struct {
-	GoodsReq *JFGoodsReq `json:"goods_req"`
+	GoodsReq *JFGoodsReq `json:"goodsReq"`
 }
 
 // JDUnionOpenGoodsBigFieldQueryTopLevel 京粉精选商品查询接口

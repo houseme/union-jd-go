@@ -94,9 +94,3 @@ func WithUnionOpenGoodsJingFenQueryRequest(req *entity.UnionOpenGoodsJingFenQuer
 		o.UnionOpenGoodsJingFenQueryRequest = req
 	}
 }
-
-// UnionResponse is a response struct.
-type UnionResponse struct {
-	OpenCategoryGoodsGetResponse       *entity.OpenCategoryGoodsGetResponse       `json:"open_category_goods_get_response,omitempty"`
-	UnionOpenGoodsJingFenQueryResponse *entity.UnionOpenGoodsJingFenQueryResponse `json:"union_open_goods_jingfen_query_response,omitempty"`
-}
