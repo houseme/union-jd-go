@@ -18,9 +18,10 @@ import (
 )
 
 type options struct {
-	Method                            string `json:"method" dc:"API接口名称"`
-	OpenCategoryGoodsGetRequest       entity.OpenCategoryGoodsGetRequest
-	UnionOpenGoodsJingFenQueryRequest *entity.UnionOpenGoodsJingFenQueryRequest
+	Method                             string `json:"method" dc:"API接口名称"`
+	OpenCategoryGoodsGetRequest        *entity.OpenCategoryGoodsGetRequest
+	UnionOpenGoodsJingFenQueryRequest  *entity.UnionOpenGoodsJingFenQueryRequest
+	UnionOpenGoodsBigFieldQueryRequest *entity.UnionOpenGoodsBigFieldQueryRequest
 }
 
 // Option The option is a polaris option.
@@ -32,8 +33,9 @@ type UnionRequest struct {
 	method string
 	config *config.Config
 
-	openCategoryGoodsGetRequest       *entity.OpenCategoryGoodsGetRequest       // 京东商品分类接口
-	unionOpenGoodsJingFenQueryRequest *entity.UnionOpenGoodsJingFenQueryRequest // 京粉精选商品查询接口
+	openCategoryGoodsGetRequest        *entity.OpenCategoryGoodsGetRequest        // 京东商品分类接口
+	unionOpenGoodsJingFenQueryRequest  *entity.UnionOpenGoodsJingFenQueryRequest  // 京粉精选商品查询接口
+	unionOpenGoodsBigFieldQueryRequest *entity.UnionOpenGoodsBigFieldQueryRequest // 京东商品详情查询接口
 }
 
 // NewUnionRequest implements the use case for JD goods.
@@ -46,11 +48,12 @@ func NewUnionRequest(ctx context.Context, conf *config.Config, opts ...Option) *
 		opt(&op)
 	}
 	return &UnionRequest{
-		ctx:                               ctx,
-		config:                            conf,
-		method:                            op.Method,
-		openCategoryGoodsGetRequest:       &op.OpenCategoryGoodsGetRequest,
-		unionOpenGoodsJingFenQueryRequest: op.UnionOpenGoodsJingFenQueryRequest,
+		ctx:                                ctx,
+		config:                             conf,
+		method:                             op.Method,
+		openCategoryGoodsGetRequest:        op.OpenCategoryGoodsGetRequest,
+		unionOpenGoodsJingFenQueryRequest:  op.UnionOpenGoodsJingFenQueryRequest,
+		unionOpenGoodsBigFieldQueryRequest: op.UnionOpenGoodsBigFieldQueryRequest,
 	}
 }
 
@@ -74,6 +77,11 @@ func (s *UnionRequest) GetUnionOpenGoodsJingFenQueryRequest() *entity.UnionOpenG
 	return s.unionOpenGoodsJingFenQueryRequest
 }
 
+// GetUnionOpenGoodsBigFieldQueryRequest .
+func (s *UnionRequest) GetUnionOpenGoodsBigFieldQueryRequest() *entity.UnionOpenGoodsBigFieldQueryRequest {
+	return s.unionOpenGoodsBigFieldQueryRequest
+}
+
 // WithMethod .
 func WithMethod(method string) Option {
 	return func(o *options) {
@@ -84,7 +92,7 @@ func WithMethod(method string) Option {
 // WithOpenCategoryGoodsGetRequest .
 func WithOpenCategoryGoodsGetRequest(req *entity.OpenCategoryGoodsGetRequest) Option {
 	return func(o *options) {
-		o.OpenCategoryGoodsGetRequest = *req
+		o.OpenCategoryGoodsGetRequest = req
 	}
 }
 
@@ -92,5 +100,12 @@ func WithOpenCategoryGoodsGetRequest(req *entity.OpenCategoryGoodsGetRequest) Op
 func WithUnionOpenGoodsJingFenQueryRequest(req *entity.UnionOpenGoodsJingFenQueryRequest) Option {
 	return func(o *options) {
 		o.UnionOpenGoodsJingFenQueryRequest = req
+	}
+}
+
+// WithUnionOpenGoodsBigFieldQueryRequest .
+func WithUnionOpenGoodsBigFieldQueryRequest(req *entity.UnionOpenGoodsBigFieldQueryRequest) Option {
+	return func(o *options) {
+		o.UnionOpenGoodsBigFieldQueryRequest = req
 	}
 }

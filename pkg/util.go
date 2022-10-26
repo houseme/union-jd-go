@@ -156,6 +156,36 @@ func (l *util) Handler(ctx context.Context, req *handler.UnionRequest) (resp *ha
 	return
 }
 
+// ParamsToString params to string
+func (l *util) ParamsToString(ctx context.Context, req *handler.UnionRequest) (str string, err error) {
+	ctx, span := gtrace.NewSpan(ctx, "tracing-union-jd-util-ParamsStr")
+	defer span.End()
+
+	l.logger.Debug(ctx, "params str start params:", req)
+	var params interface{}
+	switch req.GetMethod() {
+	case config.UnionOpenCategoryGoodsGet:
+		params = req.GetOpenCategoryGoodsGetRequest()
+	case config.UnionOpenGoodsJingFenQuery:
+		params = req.GetUnionOpenGoodsJingFenQueryRequest()
+	case config.UnionOpenGoodsBigFieldQuery:
+		params = req.GetUnionOpenGoodsBigFieldQueryRequest()
+	default:
+		params = nil
+	}
+
+	if params == nil {
+		return "", gerror.New("params is nil")
+	}
+
+	if str, err = gjson.New(params).ToJsonString(); err != nil {
+		err = gerror.Wrap(err, "json to string err")
+		return
+	}
+	l.logger.Debug(ctx, "params str end result:", str)
+	return str, nil
+}
+
 // ResponseToStruct response to struct
 func (l *util) ResponseToStruct(ctx context.Context, response, method string) (resp *handler.UnionResponse, err error) {
 	ctx, span := gtrace.NewSpan(ctx, "tracing-union-jd-util-ResponseToStruct")
@@ -167,6 +197,8 @@ func (l *util) ResponseToStruct(ctx context.Context, response, method string) (r
 		resp, err = l.openCategoryGoodsGetResponse(ctx, response)
 	case config.UnionOpenGoodsJingFenQuery:
 		resp, err = l.unionOpenGoodsJingFenQueryResponse(ctx, response)
+	case config.UnionOpenGoodsBigFieldQuery:
+		resp, err = l.unionOpenGoodsBigFieldQueryResponse(ctx, response)
 	default:
 		resp = nil
 		err = gerror.New("method not found")
@@ -223,30 +255,26 @@ func (l *util) unionOpenGoodsJingFenQueryResponse(ctx context.Context, response 
 	return
 }
 
-// ParamsToString params to string
-func (l *util) ParamsToString(ctx context.Context, req *handler.UnionRequest) (str string, err error) {
-	ctx, span := gtrace.NewSpan(ctx, "tracing-union-jd-util-ParamsStr")
+// unionOpenGoodsBigFieldQueryResponse
+func (l *util) unionOpenGoodsBigFieldQueryResponse(ctx context.Context, response string) (resp *handler.UnionResponse, err error) {
+	ctx, span := gtrace.NewSpan(ctx, "tracing-union-jd-util-unionOpenGoodsBigFieldQueryResponse")
 	defer span.End()
 
-	l.logger.Debug(ctx, "params str start params:", req)
-	var params interface{}
-	switch req.GetMethod() {
-	case config.UnionOpenCategoryGoodsGet:
-		params = req.GetOpenCategoryGoodsGetRequest()
-	case config.UnionOpenGoodsJingFenQuery:
-		params = req.GetUnionOpenGoodsJingFenQueryRequest()
-	default:
-		params = nil
-	}
-
-	if params == nil {
-		return "", gerror.New("params is nil")
-	}
-
-	if str, err = gjson.New(params).ToJsonString(); err != nil {
-		err = gerror.Wrap(err, "json to string err")
+	l.logger.Debug(ctx, "union open goods big field query response start params:", response)
+	var result *entity.UnionOpenGoodsBigFieldQueryResponseTopLevel
+	if err = gjson.New(response).Scan(&result); err != nil {
+		err = gerror.Wrap(err, "response read err")
 		return
 	}
-	l.logger.Debug(ctx, "params str end result:", str)
-	return str, nil
+
+	if result == nil {
+		err = gerror.New("response is nil")
+		return
+	}
+
+	resp = &handler.UnionResponse{
+		UnionOpenGoodsBigFieldQueryResponseTopLevel: result,
+	}
+	l.logger.Debug(ctx, "union open goods big field query response end result:", resp)
+	return
 }

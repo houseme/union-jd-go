@@ -14,6 +14,7 @@ import (
 
 // UnionResponse is a response struct.
 type UnionResponse struct {
-	OpenCategoryGoodsGetResponse               *entity.OpenCategoryGoodsGetResponse               `json:"open_category_goods_get_response,omitempty"`
-	UnionOpenGoodsJingFenQueryResponseTopLevel *entity.UnionOpenGoodsJingFenQueryResponseTopLevel `json:"union_open_goods_jingfen_query_response,omitempty"`
+	OpenCategoryGoodsGetResponse                *entity.OpenCategoryGoodsGetResponse                `json:"open_category_goods_get_response,omitempty"`
+	UnionOpenGoodsJingFenQueryResponseTopLevel  *entity.UnionOpenGoodsJingFenQueryResponseTopLevel  `json:"union_open_goods_jingfen_query_response,omitempty"`
+	UnionOpenGoodsBigFieldQueryResponseTopLevel *entity.UnionOpenGoodsBigFieldQueryResponseTopLevel `json:"union_open_goods_bigfield_query_response,omitempty"`
 }

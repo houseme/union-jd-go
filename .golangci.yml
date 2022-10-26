@@ -1,9 +1,9 @@
 run:
-  skip-dirs: # 设置要忽略的目录
+  skip-dirs: # sets the directories to ignore
     - util
     - .*~
     - api/swagger/docs
-  skip-files: # 设置不需要检查的go源码文件，支持正则匹配
+  skip-files: # Set the go source files that do not need to be checked to support regular matching
     - ".*.my.go$"
     - ".*.pb.go$"
     - _test.go
@@ -14,22 +14,21 @@ linters:
   disable-all: true
   enable:
     - bodyclose
-    # - deadcode
     - depguard
     - dogsled
-    # - dupl
+    - dupl
     - errcheck
     - funlen
     - goconst
-    # - gocritic
+    - gocritic
     - gocyclo
     - gofmt
     - goimports
     - goprintffuncname
-    # - gosimple
+    - gosimple
     - govet
     - ineffassign
-    - misspell
+    # - misspell
     - nolintlint
     - revive
     # - rowserrcheck
@@ -39,8 +38,7 @@ linters:
     - typecheck
     - unconvert
     - unparam
-    # - unused
-    # - varcheck
+    - unused
     - whitespace
 
 issues:
@@ -67,9 +65,9 @@ linters-settings:
   #    check-type-assertions: true # 这里建议设置为true，如果确实不需要检查，可以写成`num, _ := strconv.Atoi(numStr)`
   #    check-blank: false
   lll:
-    line-length: 240 # 一行的长度
+    line-length: 240 # the length of a line
   godox:
-    keywords: # 建议设置为BUG、FIXME、OPTIMIZE、HACK
+    keywords: # It is recommended to set to BUG, FIXME, OPTIMIZE, HACK
       - BUG
       - FIXME
       - OPTIMIZE

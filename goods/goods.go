@@ -102,3 +102,39 @@ func (s *Goods) NewUnionOpenGoodsJingFenQueryRequest(goodsReq *entity.JFGoodsReq
 		GoodsReq: goodsReq,
 	}
 }
+
+// QueryGoodsDetail goods detail query
+// 京粉商品详情查询
+func (s *Goods) QueryGoodsDetail(req *entity.UnionOpenGoodsBigFieldQueryRequest) (res *entity.UnionOpenGoodsBigFieldQueryResponseTopLevel, err error) {
+	ctx, span := gtrace.NewSpan(s.ctx, "tracing-union-jd-goods-QueryGoodsDetail")
+	defer span.End()
+
+	s.config.Logger().Info(ctx, "Query Goods detail start params:", req)
+	if req == nil {
+		err = gerror.New("query Goods detail request required")
+		return
+	}
+	var (
+		util    = pkg.NewUtil(s.config.Logger())
+		request = handler.NewUnionRequest(ctx, s.config, handler.WithMethod(config.UnionOpenGoodsBigFieldQuery), handler.WithUnionOpenGoodsBigFieldQueryRequest(req))
+		resp    *handler.UnionResponse
+	)
+
+	if resp, err = util.Handler(ctx, request); err != nil {
+		err = gerror.New("query category request failed")
+		return
+	}
+	if resp == nil {
+		err = gerror.New("query goods list response is nil")
+		return
+	}
+
+	if resp.UnionOpenGoodsBigFieldQueryResponseTopLevel == nil {
+		err = gerror.New("query goods list response is nil")
+		return
+	}
+	s.config.Logger().Debug(ctx, "query goods list response:", resp)
+	res = resp.UnionOpenGoodsBigFieldQueryResponseTopLevel
+	s.config.Logger().Debug(ctx, "query goods list response:", res)
+	return
+}

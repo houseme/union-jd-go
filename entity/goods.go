@@ -189,21 +189,87 @@ type UnionOpenGoodsJingFenQueryRequest struct {
 	GoodsReq *JFGoodsReq `json:"goodsReq"`
 }
 
-// JDUnionOpenGoodsBigFieldQueryTopLevel 京粉精选商品查询接口
-type JDUnionOpenGoodsBigFieldQueryTopLevel struct {
-	JDUnionOpenGoodsBigFieldQueryResponse JDUnionOpenGoodsBigFieldQueryResponse `json:"jd_union_open_goods_bigfield_query_response"`
+// UnionOpenGoodsBigFieldQueryRequest 京东联盟大字段商品查询接口
+type UnionOpenGoodsBigFieldQueryRequest struct {
+	BigFieldGoodsReq *BigFieldGoodsReq `json:"goodsReq"`
 }
 
-// JDUnionOpenGoodsBigFieldQueryResponse 京粉精选商品查询接口响应
-type JDUnionOpenGoodsBigFieldQueryResponse struct {
-	Result string `json:"queryResult"`
-	Code   string `json:"code"`
+// BigFieldGoodsReq 大字段商品查询请求
+type BigFieldGoodsReq struct {
+	SkuIds []int64  `json:"skuIds"`           // skuId集合，最多支持100个
+	Fields []string `json:"fields,omitempty"` // 支持出参数据筛选，逗号','分隔，目前可用：videoInfo,documentInfo
 }
 
-// JDUnionOpenGoodsBigFieldQueryResult 京粉精选商品查询接口结果
-type JDUnionOpenGoodsBigFieldQueryResult struct {
-	Code      int64         `json:"code"`
-	Data      []interface{} `json:"data"`
-	Message   string        `json:"message"`
-	RequestID string        `json:"requestId"`
+// UnionOpenGoodsBigFieldQueryResponseTopLevel 京粉精选商品查询接口
+type UnionOpenGoodsBigFieldQueryResponseTopLevel struct {
+	UnionOpenGoodsBigFieldQueryResponse *UnionOpenGoodsBigFieldQueryResponse `json:"jd_union_open_goods_bigfield_query_responce"`
+}
+
+// UnionOpenGoodsBigFieldQueryResponse 京粉精选商品查询接口响应
+type UnionOpenGoodsBigFieldQueryResponse struct {
+	QueryResult   string `json:"queryResult"`
+	ErrorMessage  string `json:"errorMessage"`
+	ErrorSolution string `json:"errorSolution"`
+	Code          uint   `json:"code,string"`
+}
+
+// UnionOpenGoodsBigFieldQueryResult 京粉精选商品查询接口结果
+type UnionOpenGoodsBigFieldQueryResult struct {
+	Code      int64                         `json:"code"`
+	Data      []*UnionOpenGoodsBigFieldData `json:"data"`
+	Message   string                        `json:"message"`
+	RequestID string                        `json:"requestId"`
+}
+
+// UnionOpenGoodsBigFieldData .
+type UnionOpenGoodsBigFieldData struct {
+	BigFieldGoodsResp struct {
+		SkuName           string             `json:"skuName"`
+		VideoBigFieldInfo *VideoBigFieldInfo `json:"videoBigFieldInfo"`
+		Owner             string             `json:"owner"`
+		BaseBigFieldInfo  *BaseBigFieldInfo  `json:"baseBigFieldInfo"`
+		MainSkuID         string             `json:"mainSkuId"`
+		BookBigFieldInfo  *BookBigFieldInfo  `json:"bookBigFieldInfo"`
+		ProductID         string             `json:"productId"`
+		SkuStatus         string             `json:"skuStatus"`
+		DetailImages      string             `json:"detailImages"`
+		ImageInfo         *JFGoodsResp       `json:"imageInfo"`
+		SkuID             string             `json:"skuId"`
+		CategoryInfo      *CategoryInfo      `json:"categoryInfo"`
+	} `json:"bigFieldGoodsResp"`
+}
+
+// VideoBigFieldInfo .
+type VideoBigFieldInfo struct {
+	ProductFeatures     string `json:"productFeatures"`
+	Image               string `json:"image"`
+	MaterialDescription string `json:"material_Description"`
+	Comments            string `json:"comments"`
+	BoxContents         string `json:"box_Contents"`
+	EditerDesc          string `json:"editerDesc"`
+	ContentDesc         string `json:"contentDesc"`
+	Manual              string `json:"manual"`
+	Catalogue           string `json:"catalogue"`
+}
+
+// BaseBigFieldInfo .
+type BaseBigFieldInfo struct {
+	Wdis       string `json:"wdis"`
+	WareQD     string `json:"wareQD"`
+	PropGroups string `json:"propGroups"`
+	PropCode   string `json:"propCode"`
+}
+
+// BookBigFieldInfo .
+type BookBigFieldInfo struct {
+	ProductFeatures string `json:"productFeatures"`
+	Image           string `json:"image"`
+	Comments        string `json:"comments"`
+	RelatedProducts string `json:"relatedProducts"`
+	AuthorDesc      string `json:"authorDesc"`
+	BookAbstract    string `json:"bookAbstract"`
+	EditerDesc      string `json:"editerDesc"`
+	ContentDesc     string `json:"contentDesc"`
+	Catalogue       string `json:"catalogue"`
+	Introduction    string `json:"introduction"`
 }

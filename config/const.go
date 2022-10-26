@@ -51,6 +51,11 @@ const (
 	// see https://union.jd.com/openplatform/api/v2?apiName=jd.union.open.goods.jingfen.query
 	UnionOpenGoodsJingFenQuery = "jd.union.open.goods.jingfen.query"
 
+	// UnionOpenGoodsBigFieldQuery jd.union.open.goods.bigfield.query
+	// 商品详情查询接口,大字段信息
+	// see https://union.jd.com/openplatform/api/v2?apiName=jd.union.open.goods.bigfield.query
+	UnionOpenGoodsBigFieldQuery = "jd.union.open.goods.bigfield.query"
+
 	// DefaultParentID 父类目id 一级类目id为0
 	// see https://union.jd.com/openplatform/api/v2?apiName=jd.union.open.category.goods.get
 	DefaultParentID uint = 0
@@ -138,4 +143,22 @@ const (
 	SortByDesc = "desc" // 降序
 	// SortByAsc asc,desc升降序,默认降序
 	SortByAsc = "asc" // 升序
+)
+
+const (
+	// CategoryInfo 查询域集合，不填写则查询全部，
+	// 目目前支持：categoryInfo（类目信息）,imageInfo（图片信息）,baseBigFieldInfo（基础大字段信息）,bookBigFieldInfo（图书大字段信息）,videoBigFieldInfo（影音大字段信息）,detailImages（商详图）
+
+	// CategoryInfo categoryInfo（类目信息）
+	CategoryInfo = "categoryInfo" // 类目信息
+	// ImageInfo imageInfo（图片信息）
+	ImageInfo = "imageInfo" // 图片信息
+	// BaseBigFieldInfo baseBigFieldInfo（基础大字段信息）
+	BaseBigFieldInfo = "baseBigFieldInfo" // 基础大字段信息
+	// BookBigFieldInfo bookBigFieldInfo（图书大字段信息）
+	BookBigFieldInfo = "bookBigFieldInfo" // 图书大字段信息
+	// VideoBigFieldInfo videoBigFieldInfo（影音大字段信息）
+	VideoBigFieldInfo = "videoBigFieldInfo" // 影音大字段信息
+	// DetailImages detailImages（商详图）
+	DetailImages = "detailImages" // 商详图
 )

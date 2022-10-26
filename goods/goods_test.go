@@ -236,3 +236,64 @@ func TestGoods_QueryGoods(t *testing.T) {
 		})
 	}
 }
+
+func TestGoods_QueryGoodsDetail(t *testing.T) {
+	type fields struct {
+		ctx    context.Context
+		config *config.Config
+	}
+	type args struct {
+		req *entity.UnionOpenGoodsBigFieldQueryRequest
+	}
+	tests := []struct {
+		name    string
+		fields  fields
+		args    args
+		wantRes *entity.UnionOpenGoodsBigFieldQueryResponseTopLevel
+		wantErr bool
+	}{
+		{
+			name: "TestGoods_QueryGoodsDetail",
+			fields: fields{
+				ctx:    ctx,
+				config: c,
+			},
+			args: args{
+				req: &entity.UnionOpenGoodsBigFieldQueryRequest{
+					BigFieldGoodsReq: &entity.BigFieldGoodsReq{
+						SkuIds: []int64{10051671714670, 10035657279233},
+					},
+				},
+			},
+			wantRes: &entity.UnionOpenGoodsBigFieldQueryResponseTopLevel{
+				UnionOpenGoodsBigFieldQueryResponse: &entity.UnionOpenGoodsBigFieldQueryResponse{
+					Code: 0,
+				},
+			},
+			wantErr: false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			s := &Goods{
+				ctx:    tt.fields.ctx,
+				config: tt.fields.config,
+			}
+			gotRes, err := s.QueryGoodsDetail(tt.args.req)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("QueryGoodsDetail() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !reflect.DeepEqual(gotRes.UnionOpenGoodsBigFieldQueryResponse.Code, tt.wantRes.UnionOpenGoodsBigFieldQueryResponse.Code) {
+				t.Errorf("QueryGoodsDetail() gotRes = %v, want %v", gotRes, tt.wantRes)
+			}
+			t.Log(gotRes.UnionOpenGoodsBigFieldQueryResponse.QueryResult)
+			var result *entity.UnionOpenGoodsBigFieldQueryResult
+			if err = gjson.New(gotRes.UnionOpenGoodsBigFieldQueryResponse.QueryResult).Scan(&result); err != nil {
+				t.Errorf("QueryCate() error = %v", err)
+			}
+			fmt.Println("===============================")
+			fmt.Println(result, "len:", len(result.Data), "item:", result.Data[0])
+		})
+	}
+}

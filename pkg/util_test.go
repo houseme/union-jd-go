@@ -28,7 +28,6 @@ func TestNewUtil(t *testing.T) {
 		args args
 		want *util
 	}{
-		// TODO: Add test cases.
 		{
 			name: "TestNewUtil",
 			args: args{log: glog.New()},
@@ -58,7 +57,6 @@ func Test_util_ConcatenateSignSource(t *testing.T) {
 		args   args
 		want   string
 	}{
-		// TODO: Add test cases.
 		{
 			name:   "Test_util_ConcatenateSignSource",
 			fields: fields{logger: glog.New()},
@@ -73,7 +71,7 @@ func Test_util_ConcatenateSignSource(t *testing.T) {
 					SortParam:   1,
 				},
 			},
-			want: "unift_id100134845 positionId11901555211",
+			want: "intParam123456sortParam1stringParamvalue",
 		},
 	}
 	for _, tt := range tests {
@@ -104,7 +102,6 @@ func Test_util_MakeSign(t *testing.T) {
 		want    string
 		wantErr bool
 	}{
-		// TODO: Add test cases.
 		{
 			name:   "Test_util_MakeSign",
 			fields: fields{logger: glog.New()},
@@ -115,7 +112,7 @@ func Test_util_MakeSign(t *testing.T) {
 					Method: config.UnionOpenCategoryGoodsGet,
 				},
 			},
-			want:    "",
+			want:    "05DC543401CBE7A05B577A01BAF1863F",
 			wantErr: false,
 		},
 	}
@@ -147,7 +144,7 @@ func Test_util_NewRequest(t *testing.T) {
 		params string
 	}
 
-	conf, _ := config.NewConfig(context.Background(), "", "")
+	conf, _ := config.NewConfig(context.Background(), "A123456", "S12345678")
 
 	tests := []struct {
 		name    string
@@ -166,7 +163,14 @@ func Test_util_NewRequest(t *testing.T) {
 				method: config.UnionOpenCategoryGoodsGet,
 				params: "JZK27bviLKM",
 			},
-			wantReq: &entity.Request{Method: config.UnionOpenCategoryGoodsGet},
+			wantReq: &entity.Request{
+				Method:       config.UnionOpenCategoryGoodsGet,
+				AppKey:       conf.AppKey(),
+				Format:       config.RequestFormat,
+				Timestamp:    "",
+				BuyParamJSON: "JZK27bviLKM",
+				SignMethod:   config.RequestSignMethod,
+			},
 			wantErr: false,
 		},
 	}
@@ -180,7 +184,15 @@ func Test_util_NewRequest(t *testing.T) {
 				t.Errorf("NewRequest() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
-			if !reflect.DeepEqual(gotReq, tt.wantReq) {
+			if !reflect.DeepEqual(gotReq.AppKey, tt.wantReq.AppKey) {
+				t.Errorf("NewRequest() gotReq = %v, want %v", gotReq, tt.wantReq)
+			}
+
+			if !reflect.DeepEqual(gotReq.Format, tt.wantReq.Format) {
+				t.Errorf("NewRequest() gotReq = %v, want %v", gotReq, tt.wantReq)
+			}
+
+			if !reflect.DeepEqual(gotReq.SignMethod, tt.wantReq.SignMethod) {
 				t.Errorf("NewRequest() gotReq = %v, want %v", gotReq, tt.wantReq)
 			}
 		})
