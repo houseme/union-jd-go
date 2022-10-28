@@ -121,20 +121,56 @@ func (s *Goods) QueryGoodsDetail(req *entity.UnionOpenGoodsBigFieldQueryRequest)
 	)
 
 	if resp, err = util.Handler(ctx, request); err != nil {
-		err = gerror.New("query category request failed")
+		err = gerror.New("query material goods request failed")
 		return
 	}
 	if resp == nil {
-		err = gerror.New("query goods list response is nil")
+		err = gerror.New("query goods detail response is nil")
 		return
 	}
 
 	if resp.UnionOpenGoodsBigFieldQueryResponseTopLevel == nil {
-		err = gerror.New("query goods list response is nil")
+		err = gerror.New("query goods detail response is nil")
 		return
 	}
-	s.config.Logger().Debug(ctx, "query goods list response:", resp)
+	s.config.Logger().Debug(ctx, "query goods detail response:", resp)
 	res = resp.UnionOpenGoodsBigFieldQueryResponseTopLevel
-	s.config.Logger().Debug(ctx, "query goods list response:", res)
+	s.config.Logger().Debug(ctx, "query goods detail response:", res)
+	return
+}
+
+// QueryMaterialGoods goods.material.query
+// 猜你喜欢商品推荐
+func (s *Goods) QueryMaterialGoods(req *entity.UnionOpenGoodsMaterialQueryRequest) (res *entity.UnionOpenGoodsMaterialQueryResponseTopLevel, err error) {
+	ctx, span := gtrace.NewSpan(s.ctx, "tracing-union-jd-goods-QueryMaterialGoods")
+	defer span.End()
+
+	s.config.Logger().Info(ctx, "Query Goods Material start params:", req)
+	if req == nil {
+		err = gerror.New("query Goods Material request required")
+		return
+	}
+	var (
+		util    = pkg.NewUtil(s.config.Logger())
+		request = handler.NewUnionRequest(ctx, s.config, handler.WithMethod(config.UnionOpenGoodsMaterialQuery), handler.WithUnionOpenGoodsMaterialQueryRequest(req))
+		resp    *handler.UnionResponse
+	)
+
+	if resp, err = util.Handler(ctx, request); err != nil {
+		err = gerror.New("query Material request failed")
+		return
+	}
+	if resp == nil {
+		err = gerror.New("query goods Material response is nil")
+		return
+	}
+
+	if resp.UnionOpenGoodsBigFieldQueryResponseTopLevel == nil {
+		err = gerror.New("query goods Material response is nil")
+		return
+	}
+	s.config.Logger().Debug(ctx, "query goods Material response:", resp)
+	res = resp.UnionOpenGoodsMaterialQueryResponseTopLevel
+	s.config.Logger().Debug(ctx, "query goods Material response:", res)
 	return
 }

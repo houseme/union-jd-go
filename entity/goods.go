@@ -104,7 +104,8 @@ type Coupon struct {
 
 // ImageInfo 图片信息
 type ImageInfo struct {
-	ImageList []*URLInfo `json:"imageList"` // 图片合集
+	ImageList  []*URLInfo `json:"imageList"`  // 图片合集
+	WhiteImage string     `json:"whiteImage"` // 白底图
 }
 
 // URLInfo 图片合集
@@ -181,7 +182,6 @@ type JFGoodsReq struct {
 	EliteID   config.EliteID `json:"eliteId,omitempty"`   // 频道ID
 	PageIndex uint           `json:"pageIndex,omitempty"` // 页码 默认1
 	PageSize  uint           `json:"PageSize,omitempty"`  // 每页数量，默认20，上限50
-
 }
 
 // UnionOpenGoodsJingFenQueryRequest 京粉精选商品查询接口
@@ -272,4 +272,166 @@ type BookBigFieldInfo struct {
 	ContentDesc     string `json:"contentDesc"`
 	Catalogue       string `json:"catalogue"`
 	Introduction    string `json:"introduction"`
+}
+
+// MaterialGoodsReq 商品查询请求
+type MaterialGoodsReq struct {
+	SortName   string         `json:"sortName,omitempty"`   // 排序字段
+	Sort       string         `json:"sort,omitempty"`       // asc,desc升降序,默认降序
+	Pid        string         `json:"pid,omitempty"`        // 联盟id_应用id_推广位id，三段式
+	Fields     string         `json:"fields,omitempty"`     // 支持出参数据筛选，逗号','分隔，目前可用：videoInfo,documentInfo
+	SiteID     string         `json:"siteId,omitempty"`     // 站点ID是指在联盟后台的推广管理中的网站Id、APPID
+	UserID     string         `json:"userId,omitempty"`     // userIdType对应的用户设备ID，传入此参数可获得个性化推荐结果，userIdType和userId需同时传入
+	EliteID    config.EliteID `json:"eliteId"`              // 频道ID：1.猜你喜欢、2.实时热销、3.大额券、4.9.9包邮、1001.选品库
+	PageIndex  uint           `json:"pageIndex,omitempty"`  // 页码 默认1
+	PageSize   uint           `json:"PageSize,omitempty"`   // 每页数量，默认20，上限50
+	UserIDType uint           `json:"userIdType,omitempty"` // 用户ID类型，传入此参数可获得个性化推荐结果 当前userIdType支持的枚举值包括：8、16、32、64、128、32768
+}
+
+// UnionOpenGoodsMaterialQueryRequest 猜你喜欢商品推荐查询接口
+type UnionOpenGoodsMaterialQueryRequest struct {
+	MaterialGoodsReq *MaterialGoodsReq `json:"goodsReq"`
+}
+
+// UnionOpenGoodsMaterialQueryResponseTopLevel 猜你喜欢商品推荐查询响应信息
+type UnionOpenGoodsMaterialQueryResponseTopLevel struct {
+	UnionOpenGoodsBigFieldQueryResponse *UnionOpenGoodsBigFieldQueryResponse `json:"jd_union_open_goods_material_query_responce"`
+}
+
+// UnionOpenGoodsMaterialQueryResponse 猜你喜欢商品推荐查询接口响应
+type UnionOpenGoodsMaterialQueryResponse struct {
+	QueryResult   string `json:"queryResult"`
+	ErrorMessage  string `json:"errorMessage"`
+	ErrorSolution string `json:"errorSolution"`
+	Code          uint   `json:"code,string"`
+}
+
+// UnionOpenGoodsMaterialQueryResult 猜你喜欢商品推荐查询接口结果
+type UnionOpenGoodsMaterialQueryResult struct {
+	Code      int64                         `json:"code"`
+	Data      []*UnionOpenGoodsMaterialData `json:"data"`
+	Message   string                        `json:"message"`
+	RequestID string                        `json:"requestId"`
+}
+
+// BookInfo 图书信息
+type BookInfo struct {
+	Isbn string `json:"isbn"` // 图书编号
+}
+
+// UnionOpenGoodsMaterialData 猜你喜欢商品推荐查询接口数据
+type UnionOpenGoodsMaterialData struct {
+	MaterialGoodsResp struct {
+		BookInfo               *BookInfo             `json:"bookInfo"`
+		MaterialURL            string                `json:"materialUrl"`
+		ImageInfo              *ImageInfo            `json:"imageInfo"`
+		PinGouInfo             *PinGouInfo           `json:"pinGouInfo"`
+		ForbidTypes            []int                 `json:"forbidTypes"`
+		ResourceInfo           *ResourceInfo         `json:"resourceInfo"`
+		SkuLabelInfo           *SkuLabelInfo         `json:"skuLabelInfo"`
+		AddCartPrice           string                `json:"addCartPrice"`
+		SkuName                string                `json:"skuName"`
+		PriceInfo              *PriceInfo            `json:"priceInfo"`
+		Spuid                  string                `json:"spuid"`
+		CommissionInfo         *CommissionInfo       `json:"commissionInfo"`
+		SkuID                  string                `json:"skuId"`
+		BrandCode              string                `json:"brandCode"`
+		Owner                  string                `json:"owner"`
+		ShopInfo               *ShopInfo             `json:"shopInfo"`
+		Comments               string                `json:"comments"`
+		SeckillInfo            *SeckillInfo          `json:"seckillInfo"`
+		CouponInfo             *CouponInfo           `json:"couponInfo"`
+		PreSaleInfo            *PreSaleInfo          `json:"preSaleInfo"`
+		VideoInfo              *MaterialVideoInfo    `json:"videoInfo"`
+		DeliveryType           string                `json:"deliveryType"`
+		GoodCommentsShare      string                `json:"goodCommentsShare"`
+		PromotionInfo          *PromotionInfo        `json:"promotionInfo"`
+		CategoryInfo           *CategoryInfo         `json:"categoryInfo"`
+		InOrderCount30DaysSku  string                `json:"inOrderCount30DaysSku"`
+		InOrderCount30Days     string                `json:"inOrderCount30Days"`
+		ReserveInfo            *ReserveInfo          `json:"reserveInfo"`
+		PromotionLabelInfoList []*PromotionLabelInfo `json:"promotionLabelInfoList"`
+		IsHot                  string                `json:"isHot"`
+		JxFlags                []int                 `json:"jxFlags"`
+	} `json:"materialGoodsResp"`
+}
+
+// SkuLabelInfo 京东商品sku标签信息 商品标签
+type SkuLabelInfo struct {
+	Is7ToReturn    string          `json:"is7ToReturn"`
+	Fxg            string          `json:"fxg"`
+	FxgServiceList *FxgServiceList `json:"fxgServiceList"`
+}
+
+// FxgServiceList 放心购商品子标签集合
+type FxgServiceList struct {
+	CharacteristicServiceInfo []*CharacteristicServiceInfo `json:"characteristicServiceInfo"`
+}
+
+// CharacteristicServiceInfo .放心购商品子标签，此字段值可能为空
+type CharacteristicServiceInfo struct {
+	ServiceName string `json:"serviceName"`
+}
+
+// PreSaleInfo 预售信息
+type PreSaleInfo struct {
+	DepositWorth     string `json:"depositWorth"`
+	BalanceEndTime   string `json:"balanceEndTime"`
+	ShipTime         string `json:"shipTime"`
+	PreSalePayType   string `json:"preSalePayType"`
+	CurrentPrice     string `json:"currentPrice"`
+	PreSaleStartTime string `json:"preSaleStartTime"`
+	BalanceStartTime string `json:"balanceStartTime"`
+	PreSaleEndTime   string `json:"preSaleEndTime"`
+	PreSaleStatus    string `json:"preSaleStatus"`
+	AmountDeposit    string `json:"amountDeposit"`
+	DiscountType     string `json:"discountType"`
+	Earnest          string `json:"earnest"`
+	PreAmountDeposit string `json:"preAmountDeposit"`
+}
+
+// ReserveInfo . 预约信息
+type ReserveInfo struct {
+	Price                string `json:"price"`
+	PanicBuyingEndTime   string `json:"panicBuyingEndTime"`
+	StartTime            string `json:"startTime"`
+	EndTime              string `json:"endTime"`
+	Type                 string `json:"type"`
+	Status               string `json:"status"`
+	PanicBuyingStartTime string `json:"panicBuyingStartTime"`
+}
+
+// PromotionLabelInfo .商品促销标签
+type PromotionLabelInfo struct {
+	PromotionLabel   string `json:"promotionLabel"`
+	LableName        string `json:"lableName"`
+	PromotionLableID string `json:"promotionLableId"`
+	StartTime        string `json:"startTime"`
+	EndTime          string `json:"endTime"`
+}
+
+// PromotionLabelInfoList .商品促销标签列表
+type PromotionLabelInfoList struct {
+	PromotionLabelInfo []*PromotionLabelInfo `json:"promotionLabelInfo"`
+}
+
+// PromotionInfo 推广信息
+type PromotionInfo struct {
+	ClickURL string `json:"clickURL"`
+}
+
+// MaterialVideoInfo 视频信息
+type MaterialVideoInfo struct {
+	VideoList []*MaterialVideo `json:"videoList"`
+}
+
+// MaterialVideo . 视频信息
+type MaterialVideo struct {
+	Duration  string `json:"duration"`
+	High      string `json:"high"`
+	PlayType  string `json:"playType"`
+	VideoType string `json:"videoType"`
+	ImageURL  string `json:"imageUrl"`
+	Width     string `json:"width"`
+	PlayURL   string `json:"playUrl"`
 }

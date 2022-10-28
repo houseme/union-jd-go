@@ -22,6 +22,7 @@ type options struct {
 	OpenCategoryGoodsGetRequest        *entity.OpenCategoryGoodsGetRequest
 	UnionOpenGoodsJingFenQueryRequest  *entity.UnionOpenGoodsJingFenQueryRequest
 	UnionOpenGoodsBigFieldQueryRequest *entity.UnionOpenGoodsBigFieldQueryRequest
+	UnionOpenGoodsMaterialQueryRequest *entity.UnionOpenGoodsMaterialQueryRequest
 }
 
 // Option The option is a polaris option.
@@ -36,6 +37,7 @@ type UnionRequest struct {
 	openCategoryGoodsGetRequest        *entity.OpenCategoryGoodsGetRequest        // 京东商品分类接口
 	unionOpenGoodsJingFenQueryRequest  *entity.UnionOpenGoodsJingFenQueryRequest  // 京粉精选商品查询接口
 	unionOpenGoodsBigFieldQueryRequest *entity.UnionOpenGoodsBigFieldQueryRequest // 京东商品详情查询接口
+	unionOpenGoodsMaterialQueryRequest *entity.UnionOpenGoodsMaterialQueryRequest // 京东商品详情查询接口
 }
 
 // NewUnionRequest implements the use case for JD goods.
@@ -54,6 +56,7 @@ func NewUnionRequest(ctx context.Context, conf *config.Config, opts ...Option) *
 		openCategoryGoodsGetRequest:        op.OpenCategoryGoodsGetRequest,
 		unionOpenGoodsJingFenQueryRequest:  op.UnionOpenGoodsJingFenQueryRequest,
 		unionOpenGoodsBigFieldQueryRequest: op.UnionOpenGoodsBigFieldQueryRequest,
+		unionOpenGoodsMaterialQueryRequest: op.UnionOpenGoodsMaterialQueryRequest,
 	}
 }
 
@@ -82,6 +85,11 @@ func (s *UnionRequest) GetUnionOpenGoodsBigFieldQueryRequest() *entity.UnionOpen
 	return s.unionOpenGoodsBigFieldQueryRequest
 }
 
+// GetUnionOpenGoodsMaterialQueryRequest .
+func (s *UnionRequest) GetUnionOpenGoodsMaterialQueryRequest() *entity.UnionOpenGoodsMaterialQueryRequest {
+	return s.unionOpenGoodsMaterialQueryRequest
+}
+
 // WithMethod .
 func WithMethod(method string) Option {
 	return func(o *options) {
@@ -107,5 +115,12 @@ func WithUnionOpenGoodsJingFenQueryRequest(req *entity.UnionOpenGoodsJingFenQuer
 func WithUnionOpenGoodsBigFieldQueryRequest(req *entity.UnionOpenGoodsBigFieldQueryRequest) Option {
 	return func(o *options) {
 		o.UnionOpenGoodsBigFieldQueryRequest = req
+	}
+}
+
+// WithUnionOpenGoodsMaterialQueryRequest .
+func WithUnionOpenGoodsMaterialQueryRequest(req *entity.UnionOpenGoodsMaterialQueryRequest) Option {
+	return func(o *options) {
+		o.UnionOpenGoodsMaterialQueryRequest = req
 	}
 }

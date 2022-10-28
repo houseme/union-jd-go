@@ -56,6 +56,11 @@ const (
 	// see https://union.jd.com/openplatform/api/v2?apiName=jd.union.open.goods.bigfield.query
 	UnionOpenGoodsBigFieldQuery = "jd.union.open.goods.bigfield.query"
 
+	// UnionOpenGoodsMaterialQuery jd.union.open.goods.material.query
+	// 猜你喜欢商品推荐
+	// See https://union.jd.com/openplatform/api/v2?apiName=jd.union.open.goods.material.query
+	UnionOpenGoodsMaterialQuery = "jd.union.open.goods.material.query"
+
 	// DefaultParentID 父类目id 一级类目id为0
 	// see https://union.jd.com/openplatform/api/v2?apiName=jd.union.open.category.goods.get
 	DefaultParentID uint = 0

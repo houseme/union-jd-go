@@ -170,6 +170,8 @@ func (l *util) ParamsToString(ctx context.Context, req *handler.UnionRequest) (s
 		params = req.GetUnionOpenGoodsJingFenQueryRequest()
 	case config.UnionOpenGoodsBigFieldQuery:
 		params = req.GetUnionOpenGoodsBigFieldQueryRequest()
+	case config.UnionOpenGoodsMaterialQuery:
+		params = req.GetUnionOpenGoodsMaterialQueryRequest()
 	default:
 		params = nil
 	}
@@ -199,6 +201,8 @@ func (l *util) ResponseToStruct(ctx context.Context, response, method string) (r
 		resp, err = l.unionOpenGoodsJingFenQueryResponse(ctx, response)
 	case config.UnionOpenGoodsBigFieldQuery:
 		resp, err = l.unionOpenGoodsBigFieldQueryResponse(ctx, response)
+	case config.UnionOpenGoodsMaterialQuery:
+		resp, err = l.unionOpenGoodsMaterialQueryResponse(ctx, response)
 	default:
 		resp = nil
 		err = gerror.New("method not found")
@@ -276,5 +280,29 @@ func (l *util) unionOpenGoodsBigFieldQueryResponse(ctx context.Context, response
 		UnionOpenGoodsBigFieldQueryResponseTopLevel: result,
 	}
 	l.logger.Debug(ctx, "union open goods big field query response end result:", resp)
+	return
+}
+
+// unionOpenGoodsMaterialQueryResponse
+func (l *util) unionOpenGoodsMaterialQueryResponse(ctx context.Context, response string) (resp *handler.UnionResponse, err error) {
+	ctx, span := gtrace.NewSpan(ctx, "tracing-union-jd-util-unionOpenGoodsMaterialQueryResponse")
+	defer span.End()
+
+	l.logger.Debug(ctx, "union open goods Material query response start params:", response)
+	var result *entity.UnionOpenGoodsMaterialQueryResponseTopLevel
+	if err = gjson.New(response).Scan(&result); err != nil {
+		err = gerror.Wrap(err, "response read err")
+		return
+	}
+
+	if result == nil {
+		err = gerror.New("response is nil")
+		return
+	}
+
+	resp = &handler.UnionResponse{
+		UnionOpenGoodsMaterialQueryResponseTopLevel: result,
+	}
+	l.logger.Debug(ctx, "union open goods Material query response end result:", resp)
 	return
 }
