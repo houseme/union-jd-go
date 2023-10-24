@@ -2,7 +2,7 @@ module github.com/houseme/union-jd-go
 
 go 1.18
 
-require github.com/gogf/gf/v2 v2.5.5
+require github.com/gogf/gf/v2 v2.5.6
 
 require (
 	github.com/BurntSushi/toml v1.2.1 // indirect
